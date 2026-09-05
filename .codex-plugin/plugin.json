@@ -1,0 +1,9 @@
+{
+  "name": "verify-first",
+  "version": "0.1.0",
+  "description": "Five-stage verification protocol that stops overclaiming, fabricated citations, and inflated benchmark numbers.",
+  "skills": "./skills/",
+  "license": "MIT",
+  "repository": "https://github.com/steven10812122/verify-first",
+  "homepage": "https://github.com/steven10812122/verify-first"
+}

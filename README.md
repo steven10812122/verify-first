@@ -1,47 +1,66 @@
 # verify-first
 
-A Claude Code plugin that stops an AI agent from overclaiming — asserting something is novel without checking, citing a fact it never verified, inflating a benchmark's success rate, or shipping a conclusion it never tried to break.
+[![validate](https://github.com/steven10812122/verify-first/actions/workflows/validate.yml/badge.svg)](https://github.com/steven10812122/verify-first/actions/workflows/validate.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-It's two things working together, not just a document:
+> Stops an AI agent from overclaiming — asserting something is novel without checking, citing a fact it never verified, inflating a benchmark's success rate, or shipping a conclusion it never tried to break.
 
-1. **A Skill** (`skills/verify-first/SKILL.md`) — a five-stage protocol adapted directly from standard academic research training: check prior art before committing to a claim, stay current with sources as the work evolves (not just once at the start), understand existing approaches before building your own, verify results against outside reality instead of just your own pipeline, and actively challenge your own conclusion before presenting it. This is guidance — an influence on behavior, the same way a person can know a rule and still not follow it under pressure.
-2. **A `Stop` hook** (`scripts/check-overclaiming.sh`) — a deterministic backstop for the one narrow slice of this problem that's actually mechanically checkable: it scans the response about to be sent for red-flag phrases ("nobody has done this," "100% accurate," "proven to work," and similar) and blocks with feedback if nothing that looks like a search or registry check happened nearby. It can't verify a claim is *true*, only that a search was *attempted* near where a strong one was made. It runs entirely on your own machine, only reads your own local session transcript, and makes no network calls of its own.
+A portable [Agent Skill](https://agentskills.io/specification): any agent that speaks the standard can load it, and the [Skills CLI](https://skills.sh) installs it with one command on whichever of its 77+ supported agents you pick. Claude Code and Codex additionally get native plugin packaging; Claude Code's package also carries a `Stop` hook that mechanically enforces the one narrow slice of this that's actually checkable — no equivalent hook has been built or tested for Codex or any other platform, and that's stated plainly under Install, not glossed over.
 
-Every failure mode here is a real, generalized incident, not a hypothetical — including one case where an agent designed and named a tool before discovering an actively maintained competitor with 595 stars, one where a reported "95% success rate" turned out to be roughly 30/40 once each result was actually checked, and an honest account of a same-day attempt to quantify this skill's own effect that came back a flat null — see [`references/case-studies.md`](skills/verify-first/references/case-studies.md) for what that test could and couldn't show.
+## Why this exists
+
+Not a claim about AI in the abstract — a real, documented pattern from one long agent session building several small tools, where the same failure kept recurring in different disguises:
+
+- **An agent designed and named a code-quality-scanning tool, picked a name, and was about to start building it — before a routine `npm view` check turned up an actively maintained competitor with 595 GitHub stars** and a feature set already more complete than the planned MVP. The earlier "has anyone done this?" pass had relied on general web search and training-data recall, which found nothing, because a real, successful project can exist without ever being written about anywhere a search would surface it.
+- **A benchmark was reported as "95% matched."** The number counted any non-null extraction as a match — including cases where the pipeline had confidently extracted an entire paragraph of unrelated boilerplate instead of the intended figure. Checked by hand, one field at a time, the real number was close to 30 out of 40.
+- **A same-day attempt to measure whether this very skill changes behavior came back a flat null** across 12 trials, and that result is written up honestly in the case studies below rather than left out. It doesn't mean the skill does nothing — it means an isolated, single-question test can't reproduce the long-session momentum that caused the real incidents above, and that's a real, stated limit of this project, not a hidden one.
+
+Full write-ups, including one case where the discipline was followed correctly and caught a real problem before it shipped, are in [`skills/verify-first/references/case-studies.md`](skills/verify-first/references/case-studies.md).
+
+## The five-stage protocol
+
+Adapted directly from standard academic research training, not invented for this document: check prior art before committing to a claim → stay current with sources as the work evolves, not just once at the start → understand existing approaches deeply before building your own → verify results against outside reality, not just your own pipeline → actively challenge your own conclusion before presenting it. Full detail in [`skills/verify-first/SKILL.md`](skills/verify-first/SKILL.md); the checklist split by claim type (novelty, citations, benchmarks, judging someone else's work) is in [`references/verification-checklist.md`](skills/verify-first/references/verification-checklist.md).
+
+A skill file is guidance, not enforcement — Claude Code's own documentation says a loaded skill can stay fully present in context while the model simply chooses another approach under pressure. That's why the Claude Code package also ships a deterministic `Stop` hook (`scripts/check-overclaiming.sh`, with its own test suite) that scans the response about to be sent for red-flag phrases and blocks with feedback if nothing that looks like a search or registry check happened nearby. It can't verify a claim is *true* — only that a search was *attempted*. It runs entirely on your own machine and makes no network calls of its own.
 
 ## Install
 
-**Claude Code plugin marketplace** (installs the skill AND the hook together):
+### Any agent (Skills CLI, 77+ agents)
+
+```bash
+npx skills add steven10812122/verify-first -g     # -g = user scope; the default is project
+npx skills update verify-first -g                 # update
+npx skills remove verify-first -g                 # uninstall
+```
+
+Installs the skill on every agent the [Skills CLI](https://skills.sh) supports — Cursor, Cline, Windsurf, Copilot, OpenCode, goose, and more. This path gives you the guidance only, not the Claude Code `Stop` hook below. Runtime behavior outside Claude Code has not been exercised by us; the skill is plain Markdown under the Agent Skills standard, so file an issue if your agent trips on it.
+
+### Claude Code (skill + Stop hook)
 
 ```
 /plugin marketplace add steven10812122/verify-first
 /plugin install verify-first@verify-first
 ```
 
-**Or copy just the skill** into your own project (works with any Agent-Skills-compatible tool, not just Claude Code — but you won't get the hook this way):
+This is the only path that installs the enforcement hook alongside the skill.
 
-```bash
-npx skills add steven10812122/verify-first
-```
+### Codex (native, skill only — no hook)
+
+`.codex-plugin/plugin.json` points Codex at the same `skills/` folder Claude Code and the Skills CLI use — no forked content. This has **not** been installed and exercised end to end by us; it follows the same manifest shape a comparable, already-adopted multi-agent skill uses, but is otherwise unverified. File an issue if it doesn't load.
 
 ## What's in here
 
-- [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) / [`marketplace.json`](.claude-plugin/marketplace.json) — plugin manifest, so this repo installs as one plugin bundling the skill and the hook.
-- [`skills/verify-first/SKILL.md`](skills/verify-first/SKILL.md) — the skill definition: the five-stage protocol and a short pre-flight checklist.
-- [`skills/verify-first/references/verification-checklist.md`](skills/verify-first/references/verification-checklist.md) — the full checklist, split by claim type (novelty, citations, benchmarks, judging others' work, shipping).
-- [`skills/verify-first/references/case-studies.md`](skills/verify-first/references/case-studies.md) — the real incidents behind each rule, one case where the discipline caught a real problem before it shipped, and the honest null result from trying to quantify the skill's own effect.
-- [`hooks/hooks.json`](hooks/hooks.json) + [`scripts/check-overclaiming.sh`](scripts/check-overclaiming.sh) — the deterministic `Stop`-hook backstop, with its own test suite (`test/check-overclaiming.test.js`).
-
-## Why this exists
-
-This came out of an actual, long agent session building several small tools, where the same failure mode kept recurring in different disguises: assume novelty instead of checking it, trust a citation instead of confirming it, count a weak match as a win. The fix that actually worked wasn't a general instruction to "be more careful" — it was borrowing the concrete discipline a research advisor already drills into every new graduate student, writing it down as something an agent can actually follow step by step, and backing the parts of it that are mechanically checkable with an actual enforcement hook instead of relying on the written guidance alone.
+- [`.claude-plugin/`](.claude-plugin) — Claude Code plugin + marketplace manifest.
+- [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) — Codex native packaging, pointing at the same skill folder.
+- [`skills/verify-first/`](skills/verify-first) — the one canonical `SKILL.md` plus its `references/`, shared by every install path above.
+- [`hooks/hooks.json`](hooks/hooks.json) + [`scripts/check-overclaiming.sh`](scripts/check-overclaiming.sh) — the Claude-Code-specific `Stop` hook, with its own test suite (`test/check-overclaiming.test.js`).
 
 ## Development
 
 ```bash
 npm install
-npm run validate   # runs the official skills-ref validator against skills/verify-first
-npm test           # runs the hook's own regression tests
+npm run validate        # official skills-ref validator (CI-safe, no Claude Code CLI needed)
+npm run validate:plugin # official `claude plugin validate` (requires the Claude Code CLI locally)
+npm test                 # the hook's own regression tests
 ```
 
 ## License
