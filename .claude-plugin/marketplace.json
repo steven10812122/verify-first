@@ -1,0 +1,13 @@
+{
+  "name": "verify-first",
+  "owner": {
+    "name": "steven10812122"
+  },
+  "plugins": [
+    {
+      "name": "verify-first",
+      "source": "./",
+      "description": "Five-stage verification protocol plus a Stop hook that mechanically flags overclaiming language with no nearby verification evidence."
+    }
+  ]
+}

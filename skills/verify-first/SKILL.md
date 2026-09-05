@@ -65,7 +65,11 @@ Before making any claim covered above, run through `references/verification-chec
 - [ ] Have I disclosed the failures/limitations in the same breath as the successes?
 - [ ] Have I tried to break this with a real adversarial case, not just the happy path?
 
+## This is guidance, not enforcement — there's a hook for the mechanically-checkable slice
+
+This document can be fully present in context and still not change what happens next, because the model can simply choose a different approach under pressure. That's not hypothetical — it's documented behavior. This plugin therefore also ships a `Stop` hook (`scripts/check-overclaiming.sh`) that mechanically scans the response you're about to finish with for a narrow set of red-flag phrases ("nobody has done this," "100% accurate," "proven to work," and similar) and blocks with feedback if none of the recent tool calls look like an actual search or registry check. It cannot verify a claim is true — only that a search was attempted near where a strong claim was made. Treat it as a backstop for one narrow, checkable slice of this problem, not a substitute for actually following the five stages above.
+
 ## References
 
-- `references/case-studies.md` — real, specific incidents (generalized from an actual extended session) illustrating each failure mode above and what verification would have caught.
+- `references/case-studies.md` — real, specific incidents (generalized from an actual extended session) illustrating each failure mode above, including the same-day attempt to quantify this skill's own effect and what that attempt could and couldn't show.
 - `references/verification-checklist.md` — the full checklist, split by claim type (novelty claims, citations, benchmark/test reporting, judging someone else's work).

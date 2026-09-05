@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "description": "A Claude Agent Skill that stops overclaiming, fabricated citations, inflated benchmark numbers, and unfounded novelty claims via a five-stage verification protocol adapted from academic research training.",
   "private": true,
+  "type": "module",
   "scripts": {
-    "validate": "skills-ref validate ."
+    "validate": "skills-ref validate skills/verify-first",
+    "test": "node --test test/"
   },
   "devDependencies": {
     "skills-ref": "^0.1.5"

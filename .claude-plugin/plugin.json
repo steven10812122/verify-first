@@ -1,0 +1,10 @@
+{
+  "name": "verify-first",
+  "description": "Stops overclaiming, fabricated citations, inflated benchmark numbers, and unfounded novelty claims via a five-stage verification protocol, backed by a Stop hook that mechanically flags red-flag claim language with no visible verification evidence nearby.",
+  "version": "0.1.0",
+  "author": {
+    "name": "steven10812122"
+  },
+  "license": "MIT",
+  "hooks": "./hooks/hooks.json"
+}
