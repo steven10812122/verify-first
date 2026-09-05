@@ -4,19 +4,13 @@
 
 > Stops an AI agent from overclaiming — asserting something is novel without checking, citing a fact it never verified, inflating a benchmark's success rate, or shipping a conclusion it never tried to break.
 
-A portable [Agent Skill](https://agentskills.io/specification): any agent that speaks the standard can load it, and the [Skills CLI](https://skills.sh) installs it with one command on whichever of its 77+ supported agents you pick. Claude Code and Codex additionally get native plugin packaging; Claude Code's package also carries a `Stop` hook that mechanically enforces the one narrow slice of this that's actually checkable — no equivalent hook has been built or tested for Codex or any other platform, and that's stated plainly under Install, not glossed over.
+A portable [Agent Skill](https://agentskills.io/specification): any agent that speaks the standard can load it, and the [Skills CLI](https://skills.sh) installs it with one command on whichever of its 77+ supported agents you pick. Claude Code, Codex, Grok Build, and Antigravity additionally get native plugin packaging. Claude Code's package also ships a `Stop` hook that mechanically enforces the one narrow slice of this that's actually checkable — see Install for exactly which platforms that covers.
 
 ## Why this exists
 
-Not a claim about AI in the abstract — a real, documented pattern from one long agent session building several small tools, where the same failure kept recurring in different disguises:
+A real, documented pattern from an actual agent session, not a claim about AI in the abstract: the same failure kept recurring in different disguises — asserting novelty without checking a registry first, reporting a benchmark's success rate by counting weak or partial matches as wins, and shipping a feature without adversarially testing its actual weak point.
 
-- **An agent designed and named a code-quality-scanning tool, picked a name, and was about to start building it — before a routine `npm view` check turned up an actively maintained competitor with 595 GitHub stars** and a feature set already more complete than the planned MVP. The earlier "has anyone done this?" pass had relied on general web search and training-data recall, which found nothing, because a real, successful project can exist without ever being written about anywhere a search would surface it.
-- **A benchmark was reported as "95% matched."** The number counted any non-null extraction as a match — including cases where the pipeline had confidently extracted an entire paragraph of unrelated boilerplate instead of the intended figure. Checked by hand, one field at a time, the real number was close to 30 out of 40.
-- **A same-day attempt to measure whether this very skill changes behavior came back a flat null** across 12 trials, and that result is written up honestly in the case studies below rather than left out. It doesn't mean the skill does nothing — it means an isolated, single-question test can't reproduce the long-session momentum that caused the real incidents above, and that's a real, stated limit of this project, not a hidden one.
-
-Full write-ups, including one case where the discipline was followed correctly and caught a real problem before it shipped, are in [`skills/verify-first/references/case-studies.md`](skills/verify-first/references/case-studies.md).
-
-**Related work:** [Telos-evals/anti-hallucination](https://github.com/Telos-evals/anti-hallucination) is a real, existing Claude Code skill covering adjacent ground (fabrication, stale recall, paraphrase drift, unhedged confidence, with a graded CLEAN/YELLOW/RED audit mode) — found on a later, differently-phrased re-check, not the original search. It doesn't cover novelty/prior-art checking specifically or ship a deterministic hook, but its audit mechanic is worth knowing about.
+Full incident write-ups — including one case where the discipline caught a real problem before it shipped, an honest account of a same-day attempt to quantify this skill's own effect that came back a flat null, and a note on a comparable existing tool found on a later, more careful search — are in [`references/case-studies.md`](skills/verify-first/references/case-studies.md).
 
 ## The five-stage protocol
 
@@ -43,16 +37,16 @@ Installs the skill on every agent the [Skills CLI](https://skills.sh) supports �
 /plugin install verify-first@verify-first
 ```
 
-This is the only path that installs the enforcement hook alongside the skill.
+This is the only path that installs the enforcement hook alongside the skill. This is also the only platform where the whole install-and-run path has been exercised by us.
 
-### Codex (native, skill only — no hook)
+### Codex, Grok Build, Antigravity (native, skill only — no hook)
 
-`.codex-plugin/plugin.json` points Codex at the same `skills/` folder Claude Code and the Skills CLI use — no forked content. This has **not** been installed and exercised end to end by us; it follows the same manifest shape a comparable, already-adopted multi-agent skill uses, but is otherwise unverified. File an issue if it doesn't load.
+Each has a thin manifest (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, root `plugin.json`) pointing at the same `skills/` folder Claude Code and the Skills CLI use — no forked content. **None of these three have been installed and exercised end to end by us**; they follow a manifest shape a comparable, already-adopted multi-agent skill uses, but are otherwise unverified. File an issue if one doesn't load.
 
 ## What's in here
 
 - [`.claude-plugin/`](.claude-plugin) — Claude Code plugin + marketplace manifest.
-- [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) — Codex native packaging, pointing at the same skill folder.
+- `.codex-plugin/`, `.agents/plugins/marketplace.json`, root `plugin.json` — native packaging for Codex, Grok Build, and Antigravity.
 - [`skills/verify-first/`](skills/verify-first) — the one canonical `SKILL.md` plus its `references/`, shared by every install path above.
 - [`hooks/hooks.json`](hooks/hooks.json) + [`scripts/check-overclaiming.sh`](scripts/check-overclaiming.sh) — the Claude-Code-specific `Stop` hook, with its own test suite (`test/check-overclaiming.test.js`).
 
