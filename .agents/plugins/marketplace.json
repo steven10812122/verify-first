@@ -1,0 +1,16 @@
+{
+  "name": "verify-first",
+  "interface": {
+    "displayName": "Verify First"
+  },
+  "plugins": [
+    {
+      "name": "verify-first",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

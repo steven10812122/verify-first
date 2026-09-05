@@ -16,6 +16,8 @@ Not a claim about AI in the abstract — a real, documented pattern from one lon
 
 Full write-ups, including one case where the discipline was followed correctly and caught a real problem before it shipped, are in [`skills/verify-first/references/case-studies.md`](skills/verify-first/references/case-studies.md).
 
+**Related work:** [Telos-evals/anti-hallucination](https://github.com/Telos-evals/anti-hallucination) is a real, existing Claude Code skill covering adjacent ground (fabrication, stale recall, paraphrase drift, unhedged confidence, with a graded CLEAN/YELLOW/RED audit mode) — found on a later, differently-phrased re-check, not the original search. It doesn't cover novelty/prior-art checking specifically or ship a deterministic hook, but its audit mechanic is worth knowing about.
+
 ## The five-stage protocol
 
 Adapted directly from standard academic research training, not invented for this document: check prior art before committing to a claim → stay current with sources as the work evolves, not just once at the start → understand existing approaches deeply before building your own → verify results against outside reality, not just your own pipeline → actively challenge your own conclusion before presenting it. Full detail in [`skills/verify-first/SKILL.md`](skills/verify-first/SKILL.md); the checklist split by claim type (novelty, citations, benchmarks, judging someone else's work) is in [`references/verification-checklist.md`](skills/verify-first/references/verification-checklist.md).
