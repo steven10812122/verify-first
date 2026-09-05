@@ -1,0 +1,13 @@
+{
+  "name": "verify-first",
+  "version": "0.1.0",
+  "description": "A Claude Agent Skill that stops overclaiming, fabricated citations, inflated benchmark numbers, and unfounded novelty claims via a five-stage verification protocol adapted from academic research training.",
+  "private": true,
+  "scripts": {
+    "validate": "skills-ref validate ."
+  },
+  "devDependencies": {
+    "skills-ref": "^0.1.5"
+  },
+  "license": "MIT"
+}
