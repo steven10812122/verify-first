@@ -1,5 +1,6 @@
 {
   "name": "verify-first",
+  "description": "A single-plugin marketplace for verify-first: a five-stage anti-overclaiming verification protocol plus a Stop hook that mechanically checks for it.",
   "owner": {
     "name": "steven10812122"
   },
