@@ -8,7 +8,8 @@
     "validate": "skills-ref validate skills/verify-first",
     "validate:plugin": "claude plugin validate .",
     "validate:all": "npm run validate && npm run validate:plugin",
-    "test": "node --test test/"
+    "test": "node --test test/",
+    "test:install": "bash scripts/test-real-install.sh"
   },
   "devDependencies": {
     "skills-ref": "^0.1.5"

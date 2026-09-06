@@ -57,7 +57,10 @@ npm install
 npm run validate        # official skills-ref validator (CI-safe, no Claude Code CLI needed)
 npm run validate:plugin # official `claude plugin validate` (requires the Claude Code CLI locally)
 npm test                 # the hook's own regression tests
+npm run test:install     # actually installs the plugin locally and checks it loads with no errors
 ```
+
+`validate:plugin` only checks manifest schema, not whether the plugin actually loads -- a schema-valid manifest can still fail at real install time (this project shipped with exactly that bug for a while: a redundant `hooks` field that passed validation but made Claude Code refuse to load the plugin at all). `test:install` is the real check: it installs from your local working tree via the actual `claude plugin` CLI, confirms zero load errors, then cleans up after itself. It mutates your real local Claude Code user config while it runs, so it's a manual, local-only step, not part of CI.
 
 ## License
 
